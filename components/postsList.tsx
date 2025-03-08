@@ -1,12 +1,13 @@
 import { createPost, postsList } from "@/service/gorestApi";
 import { PostsModel } from "@/service/type";
-import { FormOutlined } from "@ant-design/icons";
+import { EllipsisOutlined, FormOutlined } from "@ant-design/icons";
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { List, Space, Input, Button, Form, message } from "antd";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import ModalDialogCreatePost from "./modalDialogCreatePost";
+import ActionPopover from "./actionPopover";
 
 type FieldType = {
   title : string
@@ -23,6 +24,10 @@ export default function PostsList() {
   const page = Number(searchParams.get("page")) || 1;
   const pageSize = Number(searchParams.get("pageSize")) || 10;
   const search = searchParams.get("search") || "";
+
+  const onDelete = (id : number) => {
+    console.log(id)
+  }
 
   const mutation = useMutation({
     mutationFn : ({title, body} : FieldType) => createPost(title, body),
@@ -102,9 +107,18 @@ export default function PostsList() {
             }}
             dataSource={data?.posts}
             renderItem={(item: PostsModel) => (
-              <List.Item>
+              <List.Item
+                // actions={[]}
+              >
                 <List.Item.Meta
-                  title={<Link href={`posts/${item.id}`}>{item.title}</Link>}
+                  title={
+                  <div className="flex justify-between">
+                    <Link href={`posts/${item.id}`}>{item.title}</Link>
+                      <ActionPopover onDelete={onDelete} id={item.id}>
+                        <Button type="text"><EllipsisOutlined /></Button>
+                      </ActionPopover>
+                  </div>
+                  }
                   description={item.body}
                 />
               </List.Item>
