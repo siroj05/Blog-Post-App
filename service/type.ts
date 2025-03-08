@@ -4,6 +4,7 @@ export type PostsModel = {
   name : string
   title : string
   body : string
+  usersModel? : UsersModel
 }
 
 export type UsersModel = {

@@ -6,7 +6,7 @@ interface Props {
 
 export default function Layout({ children }: Props) {
   return(
-    <div className="p-10 max-w-7xl mx-auto">
+    <div className="p-10 max-w-3xl mx-auto">
       {children}
     </div>
   )
