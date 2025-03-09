@@ -59,11 +59,9 @@ export default function CreateForm(){
               type="primary" 
               htmlType="submit" 
               className="w-full"
-              loading={mutation.isPending}
+              loading={mutation.isPending || mutation.isSuccess}
               >
-               {
-                mutation.isPending? " " : "Create"
-               }
+               Create
             </Button>
           </Form.Item>
 

@@ -41,7 +41,7 @@ export default function Navbar() {
           <h1 className="font-bold">Blog Post</h1>
         </Link>
         <Popover placement="bottomRight" className="hover:underline" content={
-          <Button onClick={onlogout} type="text" icon={<PoweroffOutlined />}>Log out</Button>
+          <Button loading={deleteUserMutation.isPending || deleteUserMutation.isSuccess} onClick={onlogout} type="text" icon={<PoweroffOutlined />}>Log out</Button>
         }>
           <div className="flex gap-2 cursor-pointer">
             <p className="my-auto text-sm">{user?.name??""}</p>
