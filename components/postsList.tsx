@@ -1,13 +1,14 @@
-import { createPost, postsList } from "@/service/gorestApi";
+import { createPost, deletePost, postsList } from "@/service/gorestApi";
 import { PostsModel } from "@/service/type";
 import { EllipsisOutlined, FormOutlined } from "@ant-design/icons";
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { List, Space, Input, Button, Form, message } from "antd";
+import { List, Space, Input, Button, Form, message, Skeleton } from "antd";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import ModalDialogCreatePost from "./modalDialogCreatePost";
 import ActionPopover from "./actionPopover";
+import { queryParams } from "@/service/utils/queryParams";
 
 type FieldType = {
   title : string
@@ -25,8 +26,27 @@ export default function PostsList() {
   const pageSize = Number(searchParams.get("pageSize")) || 10;
   const search = searchParams.get("search") || "";
 
+  const deleteMutation = useMutation({
+    mutationFn : (id:number) => deletePost(id),
+    onSuccess : (_, id) =>{
+      queryClient.setQueryData(["posts", page, pageSize, search], (oldData:any) =>{
+        if(!oldData || !oldData.posts) return oldData
+        return {
+          ...oldData,
+          posts : oldData.posts.filter((post: PostsModel) => post.id !== id),
+          totalPosts : oldData.totalPosts - 1,
+        }
+      })
+      queryClient.invalidateQueries({queryKey: ["posts"], exact: false})
+      message.success("Post deleted successfully")
+    },
+    onError: (error) => {
+      message.error(`Failed to delete : ${error.message}`)
+    }
+  })
+
   const onDelete = (id : number) => {
-    console.log(id)
+    deleteMutation.mutate(id)
   }
 
   const mutation = useMutation({
@@ -43,7 +63,7 @@ export default function PostsList() {
       };
     });
 
-    queryClient.invalidateQueries({ queryKey: ["posts"], exact: false });
+    queryClient.invalidateQueries({ queryKey: ["posts", page, pageSize, search], exact: false });
       message.success('Publish was successful')
       form.resetFields()
       setOpenDialog(false)
@@ -59,19 +79,11 @@ export default function PostsList() {
     });
   }
   
-  const { isPending, isError, data, error, isPlaceholderData } = useQuery({
+  const { isPending, data, isFetching, isRefetching } = useQuery({
     queryKey: ["posts", page, pageSize, search],
     queryFn: () => postsList(page, pageSize, search),
     placeholderData: keepPreviousData,
   });
-
-  const queryParams = (newParams: Record<string, string | number>) => {
-    const params = new URLSearchParams(searchParams.toString());
-    Object.entries(newParams).forEach(([key, value]) => {
-      params.set(key, value.toString());
-    });
-    router.push(`?${params.toString()}`, { scroll: false });
-  };
 
   return (
     <>
@@ -86,7 +98,7 @@ export default function PostsList() {
             <Input.Search
               placeholder="Search title.."
               onSearch={(value) => {
-                queryParams({ search: value, page: 1 });
+                queryParams({ search: value, page: 1 }, router, searchParams);
               }}
               enterButton="Search"
               size="large"
@@ -95,6 +107,12 @@ export default function PostsList() {
               <Button onClick={() => setOpenDialog(true)} type="dashed" size="large" icon={<FormOutlined />}>Write</Button>
           </div>
           <List
+            loading={
+             {
+              spinning : isPending || mutation.isPending || deleteMutation.isPending || isFetching || isRefetching,
+              indicator : <Skeleton active/>
+             }
+            }
             pagination={{
               position: "bottom",
               align: "center",
@@ -102,14 +120,12 @@ export default function PostsList() {
               current: page,
               total: data?.totalPosts || 0,
               onChange: (page, pageSize) => {
-                queryParams({ page, pageSize });
+                queryParams({ page, pageSize }, router, searchParams);
               },
             }}
             dataSource={data?.posts}
             renderItem={(item: PostsModel) => (
-              <List.Item
-                // actions={[]}
-              >
+              <List.Item>
                 <List.Item.Meta
                   title={
                   <div className="flex justify-between">
@@ -131,6 +147,7 @@ export default function PostsList() {
         setIsOpenDialog={setOpenDialog}
         form={form}
         onPublish={onPublish}
+        isPending={mutation.isPending}
       />
     </>
   );

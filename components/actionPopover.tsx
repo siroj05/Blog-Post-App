@@ -1,5 +1,6 @@
-import { DeleteOutlined, EditOutlined, WarningTwoTone } from "@ant-design/icons";
+import { DeleteOutlined, EditOutlined, ExclamationCircleFilled } from "@ant-design/icons";
 import { Button, Modal, Popover } from "antd";
+import Link from "next/link";
 import { ReactNode, useState } from "react";
 
 interface Props {
@@ -17,10 +18,24 @@ export default function ActionPopover(
 ){
 
   const [open, setOpen] = useState(false);
-  const [openConfirm, setOpenConfirm] = useState(false)
   const handleOpenChange = (newOpen: boolean) => {
     setOpen(newOpen);
   };
+
+  const { confirm } = Modal;
+  const showDeleteConfirm = () => {
+  confirm({
+    title: 'Are you sure delete this post?',
+    icon: <ExclamationCircleFilled />,
+    okText: 'Yes',
+    okType: 'danger',
+    cancelText: 'No',
+    centered : true,
+    onOk() {
+      onDelete(id)
+    },
+  });
+};
   
 
   return(
@@ -28,9 +43,11 @@ export default function ActionPopover(
       <Popover
         content={
           <div className="flex flex-col">
-          <Button type="text" icon={<EditOutlined />}>Edit</Button>
+          <Link href={`posts/${id}/edit`}>
+            <Button type="text" icon={<EditOutlined />}>Edit</Button>
+          </Link>
           <Button onClick={() => {
-            setOpenConfirm(true)
+            showDeleteConfirm()
             setOpen(false)
           }} type="text" icon={<DeleteOutlined />}>Delete</Button>
           </div>
@@ -42,21 +59,6 @@ export default function ActionPopover(
       >
         {children}
       </Popover>
-      <Modal
-        // title="Delete Post"
-        centered
-        open={openConfirm}
-        onOk={() => onDelete(id)}
-        onCancel={() => setOpenConfirm(false)}
-        okText="Delete"
-      >
-        <div className="flex gap-2">
-          <WarningTwoTone/>
-          <p>
-            Delete Post?
-          </p>
-        </div>
-    </Modal>
     </>
   )
 }

@@ -4,7 +4,6 @@ import { PostsModel, UsersModel } from "./type"
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL
 
 export const createUser = async (name : string, token : string) => {
-  
   const res = await axios.post(
     `${BASE_URL}/users`,
     {
@@ -84,6 +83,56 @@ export const createPost = async ( title : string, body : string) => {
       title : title,
       body : body
     },
+    {
+      headers : {
+        Authorization : `Bearer ${token}`,
+        "Content-Type" : "application/json"
+      }
+    }
+  )
+
+  return res.data
+}
+
+export const deletePost = async (id : number) => {
+  const token = localStorage.getItem("token")
+  const res = await axios.delete(
+    `${BASE_URL}/posts/${id}`,
+    {
+      headers : {
+        Authorization : `Bearer ${token}`,
+        "Content-Type" : "application/json"
+      }
+    }
+  )
+
+  return res.data
+}
+
+export const updatePost = async (id : number, title : string, body : string) => {
+  const token = localStorage.getItem("token")
+  const res = await axios.put(
+    `${BASE_URL}/posts/${id}`,
+    {
+      id : id,
+      title : title,
+      body : body
+    },
+    {
+      headers : {
+        Authorization : `Bearer ${token}`,
+        "Content-Type" : "application/json"
+      }
+    }
+  )
+
+  return res.data
+}
+
+export const deleteUser = async (id : string) => {
+  const token = localStorage.getItem("token")
+  const res = await axios.delete(
+    `${BASE_URL}/users/${id}`,
     {
       headers : {
         Authorization : `Bearer ${token}`,

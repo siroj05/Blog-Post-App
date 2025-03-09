@@ -16,7 +16,7 @@ export default function CreateForm(){
     mutationFn : ({name, token}:FieldType) => createUser(name, token),
     onSuccess : (data) => {
       message.success(`User berhasil dibuat`)
-      localStorage.setItem("user", data.id)
+      localStorage.setItem("user", JSON.stringify({id : data.id, name : data.name}))
       form.resetFields()
       router.push("/posts")
     },

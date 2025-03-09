@@ -5,13 +5,15 @@ interface Props {
   setIsOpenDialog: (value: boolean) => void;
   form : FormInstance<any>
   onPublish : () => void
+  isPending : boolean
 }
 
 export default function ModalDialogCreatePost({
   isOpenDialog,
   setIsOpenDialog,
   form,
-  onPublish
+  onPublish,
+  isPending
 }: Props) {
 
   return (
@@ -19,9 +21,22 @@ export default function ModalDialogCreatePost({
       title="Write Post"
       centered
       open={isOpenDialog}
-      onOk={onPublish}
       onCancel={() => setIsOpenDialog(false)}
-      okText="Publish"
+      footer={(_, {CancelBtn}) => (
+        <>
+            <CancelBtn/>
+            <Button 
+                type="primary" 
+                htmlType="submit" 
+                loading={isPending}
+                onClick={onPublish}
+                >
+                {
+                  isPending? " " : "Publish"
+                }
+              </Button>
+        </>
+      )}
     >
       <Form
         form={form}

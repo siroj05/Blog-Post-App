@@ -14,3 +14,8 @@ export type UsersModel = {
   gender : string
   status : string
 }
+
+export type FieldType = {
+  name : string
+  token : string
+}
