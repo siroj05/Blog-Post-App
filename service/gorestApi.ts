@@ -77,8 +77,9 @@ export const detailUser = async (id : number) => {
 export const createPost = async ( title : string, body : string) => {
   const token = localStorage.getItem("token")
   const user = localStorage.getItem("user")
+  const userId = user? JSON.parse(user).id : 0
   const res = await axios.post(
-    `${BASE_URL}/users/${user}/posts`,
+    `${BASE_URL}/users/${userId}/posts`,
     {
       title : title,
       body : body
