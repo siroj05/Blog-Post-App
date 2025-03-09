@@ -19,9 +19,8 @@ export default function EditPost({
   params : {id : string}
 }){
   const route = useRouter()
-  console.log(params)
   const [form] = useForm()
-  const {data, isPending} = useQuery({
+  const {data} = useQuery({
     queryKey: ["detail", params?.id],
     queryFn: () => detailPost(params?.id),
   })
