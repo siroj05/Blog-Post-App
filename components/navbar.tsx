@@ -4,11 +4,17 @@ import { useMutation } from "@tanstack/react-query";
 import { Avatar, Button, message, Popover } from "antd";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function Navbar() {
-  const user = localStorage.getItem("user");
-  const name = user ? JSON.parse(user).name : "";
-  const id = user ? JSON.parse(user).id : "";
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedUser = localStorage.getItem("user");
+      setUser(storedUser ? JSON.parse(storedUser) : null);
+    }
+  }, []);
   const route = useRouter()
 
   const deleteUserMutation = useMutation({
@@ -25,7 +31,7 @@ export default function Navbar() {
   })
 
   const onlogout = () => {
-    deleteUserMutation.mutate(id)
+    deleteUserMutation.mutate(user?.id??0)
   }
 
   return (
@@ -38,7 +44,7 @@ export default function Navbar() {
           <Button onClick={onlogout} type="text" icon={<PoweroffOutlined />}>Log out</Button>
         }>
           <div className="flex gap-2 cursor-pointer">
-            <p className="my-auto text-sm">{name}</p>
+            <p className="my-auto text-sm">{user?.name??""}</p>
             <Avatar/>
           </div>
         </Popover>
