@@ -91,7 +91,7 @@ export const createPost = async ( title : string, body : string) => {
       }
     }
   )
-
+  
   return res.data
 }
 

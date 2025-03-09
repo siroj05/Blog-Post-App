@@ -21,7 +21,10 @@ export default function ModalDialogCreatePost({
       title="Write Post"
       centered
       open={isOpenDialog}
-      onCancel={() => setIsOpenDialog(false)}
+      onCancel={() => {
+        form.resetFields()
+        setIsOpenDialog(false)
+      }}
       footer={(_, {CancelBtn}) => (
         <>
             <CancelBtn/>

@@ -35,13 +35,17 @@ export default function EditPost({
 
   const updateMutation = useMutation({
     mutationFn : ({id, title, body}:FieldType) => updatePost(id,title, body),
-    onSuccess : () => {
+    onSuccess : (res) => {
       form.resetFields()
       message.success("Saved updates!")
       route.push("/posts")
     },
-    onError : (error) => {
-      message.error(`Failed to save update error : ${error.message}`)
+    onError : (error : any) => {
+      error && error?.response?.data?.map((res:any) => {
+        message.error(`
+            ${res?.field} ${res?.message}
+          `)
+      })
     }
   })
 

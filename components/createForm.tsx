@@ -20,8 +20,16 @@ export default function CreateForm(){
       form.resetFields()
       router.push("/posts")
     },
-    onError: (error) => {
-      message.error(`Gagal membuat user: ${error.message}`)
+    onError : (error : any) => {
+      if(error?.response?.status == 401){
+        message.error(`${error?.response?.data?.message??""}`)
+      }else if (error?.response?.status == 422){
+        if(error?.response?.data[0].field == "name"){
+          message.error(`${error?.response?.data[0].field} ${error?.response?.data[0].message}`)
+        }else{
+          message.error(`Name has already been taken`)
+        }
+      }
     }
   })
 

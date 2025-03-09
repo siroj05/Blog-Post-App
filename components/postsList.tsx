@@ -68,8 +68,12 @@ export default function PostsList() {
       form.resetFields()
       setOpenDialog(false)
     },
-    onError: (error) => {
-      message.error(`Failed to publish error ${error.message}`)
+    onError: (error:any) => {
+      error && error?.response?.data?.map((res:any) => {
+        message.error(`
+            ${res?.field} ${res?.message}
+          `)
+      })
     }
   })
 
