@@ -28,16 +28,8 @@ export default function PostsList() {
 
   const deleteMutation = useMutation({
     mutationFn : (id:number) => deletePost(id),
-    onSuccess : (_, id) =>{
-      queryClient.setQueryData(["posts", page, pageSize, search], (oldData:any) =>{
-        if(!oldData || !oldData.posts) return oldData
-        return {
-          ...oldData,
-          posts : oldData.posts.filter((post: PostsModel) => post.id !== id),
-          totalPosts : oldData.totalPosts - 1,
-        }
-      })
-      queryClient.invalidateQueries({queryKey: ["posts"], exact: false})
+    onSuccess : () =>{
+      queryClient.invalidateQueries({queryKey: ["posts"]})
       message.success("Post deleted successfully")
     },
     onError: (error) => {
@@ -51,19 +43,9 @@ export default function PostsList() {
 
   const mutation = useMutation({
     mutationFn : ({title, body} : FieldType) => createPost(title, body),
-    onSuccess: (newPost) => {
+    onSuccess: () => {
       // ambil data lama dari cache
-    queryClient.setQueryData(["posts", page, pageSize, search], (oldData: any) => {
-      if (!oldData || !oldData.posts) return { posts: [newPost], totalPosts: 1 };
-
-      return {
-        ...oldData,
-        posts: [newPost, ...oldData.posts], 
-        totalPosts: oldData.totalPosts + 1, 
-      };
-    });
-
-    queryClient.invalidateQueries({ queryKey: ["posts", page, pageSize, search], exact: false });
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
       message.success('Publish was successful')
       form.resetFields()
       setOpenDialog(false)
