@@ -5,8 +5,8 @@
 
 ## Tech Stack
 - Next.Js v13 (Page Router)
-- Typescript (Styling)
-- Tailwind v4 
+- Typescript 
+- Tailwind v4 (Styling)
 - Tanstack Query v5
 - Axios 
 - Ant Design (Komponen UI)
